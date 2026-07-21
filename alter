@@ -5,3 +5,13 @@ use modules/config.nu *
 def main [] {
   help main
 }
+
+def "main login" [] {
+  print "Alter is a selfhosted app, we need to know url of an instance you're using."
+  let host = input "Host: " -d "https://alter.styxnotes.com"
+  set host $host
+
+  print $"\nCreate new token on: ($host)/api/v1/access_tokens"
+  let access_token = input "Paste it here: "
+  set access_token $access_token
+}

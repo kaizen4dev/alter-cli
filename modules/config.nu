@@ -10,7 +10,6 @@ def config [--path(-p)] {
   let folder = "~/.local/share/alter-cli" | path expand
   let config = $folder | path join "config.nuon"
 
-
   if not ($config | path exists) {
     mkdir $folder
     { access_token: "", host: "" } | save $config
