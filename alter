@@ -1,0 +1,7 @@
+#! /usr/bin/env nu
+
+use modules/config.nu *
+
+def main [] {
+  help main
+}
