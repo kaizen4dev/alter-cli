@@ -1,6 +1,7 @@
 #! /usr/bin/env nu
 
 use modules/config.nu *
+use modules/api.nu *
 
 def main [] {
   help main
