@@ -3,7 +3,7 @@ export def load [key?] {
 }
 
 export def set [key value] {
-  config | merge {$key: $value} | save (config -p) -f
+  config | upsert $key $value | save (config -p) -f
 }
 
 def config [--path(-p)] {
