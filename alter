@@ -4,6 +4,7 @@ use modules/config.nu *
 use modules/api.nu *
 
 source commands/links.nu
+source commands/books.nu
 
 def main [] {
   help main
