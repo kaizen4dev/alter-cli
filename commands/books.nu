@@ -42,7 +42,7 @@ def "main create book" [
 }
 
 def "main edit book" [
-  id:int
+  title_or_id
   --title(-t):string
   --category(-c):string
   --status(-s):string
@@ -50,7 +50,24 @@ def "main edit book" [
   --all_chapters(-l):float
   --read_chapters(-r):float
   --picture_url(-p):string
+  --minimal(-m)
 ] {
+  let id = match ($title_or_id | describe) {
+    "int" => $title_or_id
+    "string" => {
+      mut books = fetch books
+
+      if ($minimal) {
+        $books = $books | reject all_chapters picture_url author
+      }
+
+      $books | 
+        where ($it.title | str contains -i $title_or_id) |
+        input list | get id
+    }
+    _ => { error make -u "Provided invalid title or id" }
+  }
+
   let params = {
     title: $title
     category: $category
@@ -61,7 +78,20 @@ def "main edit book" [
     picture_url: $picture_url
   } | transpose key value | where ($it.value | is-not-empty) | transpose -rd
 
-  patch books $id $params
+  if ($params | is-empty) {
+    print "You didn't specify anything to edit."
+    return
+  }
+
+  let edited_columns = $params | columns
+  let old_book = fetch books $id
+  let new_book = patch books $id $params
+
+  $edited_columns | each {|column|
+    print $" - Changed ($column) from ($old_book | get $column) to ($new_book | get $column)"
+  }
+
+  return $new_book
 }
 
 def "main find book" [id:int] {
