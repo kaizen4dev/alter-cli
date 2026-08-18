@@ -1,4 +1,10 @@
-def "main books" [--category(-c):string --status(-s):string --minimal(-m) --search(-f)] {
+# Show all books
+def "main books" [
+  --category(-c):string # Show books only with given category
+  --status(-s):string # Show books only with given status
+  --minimal(-m) # Use minimal view. Excluded columns: id, author, all_chapters, picture_url
+  --search(-f) # Use interactive search
+] {
   mut books = fetch books
 
   if ($category | is-not-empty) {
@@ -20,14 +26,15 @@ def "main books" [--category(-c):string --status(-s):string --minimal(-m) --sear
   }
 }
 
-def "main create book" [
-  --title(-t):string
-  --category(-c):string
-  --status(-s):string
-  --author(-a):string
-  --all_chapters(-l):float
-  --read_chapters(-r):float
-  --picture_url(-p):string
+# Create new book
+def "main books create" [
+  --title(-t):string # A book title
+  --category(-c):string # A book category. Available categories: fiction, non-fiction, manga, novels
+  --status(-s):string # Status of the book. All statuses: reading, finished, dropped, planning, hiatus
+  --author(-a):string # An author of the book
+  --all_chapters(-l):float # A number of all chapters
+  --read_chapters(-r):float # A number of chapters read by you
+  --picture_url(-p):string # Url of the picture to use for the book
 ] {
   let params = {
     title: $title
@@ -41,16 +48,19 @@ def "main create book" [
   post books $params
 }
 
-def "main edit book" [
-  title_or_id
-  --title(-t):string
-  --category(-c):string
-  --status(-s):string
-  --author(-a):string
-  --all_chapters(-l):float
-  --read_chapters(-r):float
-  --picture_url(-p):string
-  --minimal(-m)
+# Edit book with provided title or id
+def "main books edit" [
+  title_or_id # If given...
+              # ... title(string) - use interactive search to find an id and then edit the book
+              # ... id(number) - quietly use it to edit the book
+  --title(-t):string # A new title
+  --category(-c):string # New category to use
+  --status(-s):string # New status to use
+  --author(-a):string # New author to use
+  --all_chapters(-l):float # New number of all chapters
+  --read_chapters(-r):float # New number of read chapters
+  --picture_url(-p):string # A url of the new picture for the book
+  --minimal(-m) # Use minimal view of the books when searching for id
 ] {
   let id = match ($title_or_id | describe) {
     "int" => $title_or_id
@@ -61,7 +71,7 @@ def "main edit book" [
         $books = $books | reject all_chapters picture_url author
       }
 
-      $books | 
+      $books |
         where ($it.title | str contains -i $title_or_id) |
         input list | get id
     }
@@ -94,10 +104,16 @@ def "main edit book" [
   return $new_book
 }
 
-def "main find book" [id:int] {
+# Find the book with provided id and display it's info
+def "main books find" [
+  id:int # An id of the book to search for
+] {
   fetch books $id
 }
 
-def "main delete book" [id:int] {
+# Delete the book with provided id
+def "main books delete" [
+  id:int # An id of the book to delete
+] {
   delete books $id
 }
