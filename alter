@@ -7,10 +7,12 @@ source commands/links.nu
 source commands/books.nu
 source commands/aliases.nu
 
+# Make sure to check --help pages for each subcommand
 def main [] {
   help main
 }
 
+# Set the host and access token
 def "main login" [] {
   print "Alter is a selfhosted app, we need to know url of an instance you're using."
   let host = input "Host: " -d "https://alter.styxnotes.com"
