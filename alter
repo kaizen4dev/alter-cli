@@ -5,6 +5,7 @@ use modules/api.nu *
 
 source commands/links.nu
 source commands/books.nu
+source commands/aliases.nu
 
 def main [] {
   help main
